@@ -1,11 +1,14 @@
 package stenden.dunstane.androidsmartdrawer;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import java.io.FileOutputStream;
 import java.util.UUID;
 import android.provider.MediaStore;
 import android.app.AlertDialog;
@@ -118,19 +121,33 @@ public class MainActivity extends Activity implements OnClickListener{
                 public void onClick(DialogInterface dialog, int which){
                     //save drawing
                     drawView.setDrawingCacheEnabled(true);
-                    String imgSaved = MediaStore.Images.Media.insertImage(
+                    //png saving
+                    Bitmap viewCache= drawView.getDrawingCache();
+
+                    try
+                    {
+                        viewCache.compress(Bitmap.CompressFormat.PNG,120,new FileOutputStream("drawing"));
+                        Toast myToast= Toast.makeText(getApplicationContext(), "Drawing Saved to device", Toast.LENGTH_SHORT);
+                    }
+                    catch(Exception e)
+                    {
+                        Toast myToast= Toast.makeText(getApplicationContext(), "Drawing not saved to device error message"+ e.getMessage(), Toast.LENGTH_SHORT);
+                    }
+
+
+                   /* String imgSaved = MediaStore.Images.Media.insertImage(
                             getContentResolver(), drawView.getDrawingCache(),
-                            UUID.randomUUID().toString()+".png", "drawing");
+                            UUID.randomUUID().toString(), "Android drawing");
                     if(imgSaved!=null){
                         Toast savedToast = Toast.makeText(getApplicationContext(),
-                                "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
+                                "PNG saved to Gallery!", Toast.LENGTH_SHORT);
                         savedToast.show();
                     }
                     else{
                         Toast unsavedToast = Toast.makeText(getApplicationContext(),
-                                "Oops! Image could not be saved.", Toast.LENGTH_SHORT);
+                                "Image was unable to be saved to gallery.", Toast.LENGTH_SHORT);
                         unsavedToast.show();
-                    }
+                    }*/
                     drawView.destroyDrawingCache();
                 }
             });
