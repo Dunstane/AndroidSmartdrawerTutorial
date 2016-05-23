@@ -18,7 +18,7 @@
     android:layout_marginRight="5dp"
     android:layout_marginTop="3dp"
     android:layout_weight="1"
-    android:background="#FFFFFFFF" />
+    android:background="#00000000" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="54dp"

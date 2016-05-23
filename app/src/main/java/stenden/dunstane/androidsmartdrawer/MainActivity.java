@@ -2,12 +2,13 @@ package stenden.dunstane.androidsmartdrawer;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.UUID;
 import android.provider.MediaStore;
@@ -16,6 +17,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+import java.lang.String;
 
 public class MainActivity extends Activity implements OnClickListener{
     private DrawingView drawView;
@@ -126,13 +128,21 @@ public class MainActivity extends Activity implements OnClickListener{
 
                     try
                     {
-                        viewCache.compress(Bitmap.CompressFormat.PNG,120,new FileOutputStream("drawing"));
-                        Toast myToast= Toast.makeText(getApplicationContext(), "Drawing Saved to device", Toast.LENGTH_SHORT);
+                        File fPath = Environment.getExternalStorageDirectory();
+                        File f = null;
+                        f = new File(fPath+"/Pictures", "drawing.png");
+
+                        FileOutputStream outstream=new FileOutputStream(f);
+                        viewCache.compress(Bitmap.CompressFormat.PNG,100,outstream);
+                        Toast savedmyToast= Toast.makeText(getApplicationContext(), "Drawing Saved to device", Toast.LENGTH_SHORT);
+                        savedmyToast.show();
+
                     }
                     catch(Exception e)
-                    {
-                        Toast myToast= Toast.makeText(getApplicationContext(), "Drawing not saved to device error message"+ e.getMessage(), Toast.LENGTH_SHORT);
+                    {  Toast unsavedmyToast= Toast.makeText(getApplicationContext(), "Drawing not saved to device error message"+ e.getMessage(), Toast.LENGTH_SHORT);
+                       unsavedmyToast.show();
                     }
+
 
 
                    /* String imgSaved = MediaStore.Images.Media.insertImage(

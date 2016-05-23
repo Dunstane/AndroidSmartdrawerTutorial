@@ -56,6 +56,7 @@ public class DrawingView extends View
 
         super.onSizeChanged(w, h, oldw, oldh);
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
         drawCanvas = new Canvas(canvasBitmap);
     }
 
@@ -113,7 +114,8 @@ public class DrawingView extends View
     }
 
     public void startNew(){
-        drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        drawCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
         invalidate();
     }
 }
