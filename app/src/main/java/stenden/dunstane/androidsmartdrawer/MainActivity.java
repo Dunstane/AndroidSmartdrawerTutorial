@@ -1,15 +1,25 @@
 package stenden.dunstane.androidsmartdrawer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.PointF;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.UUID;
 import android.provider.MediaStore;
 import android.app.AlertDialog;
@@ -62,44 +72,179 @@ public class MainActivity extends Activity implements OnClickListener{
             saveDialog.setTitle("Save drawing");
             saveDialog.setMessage("Save drawing to device Gallery?");
             saveDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
+                public void onClick(DialogInterface dialog, int which) {
                     //save drawing
                     drawView.setDrawingCacheEnabled(true);
                     //png saving
-                    Bitmap viewCache= drawView.getDrawingCache();
+                    Bitmap viewCache = drawView.getDrawingCache();
 
-                    try
-                    {
+                    try {
                         File fPath = Environment.getExternalStorageDirectory();
                         File f = null;
-                        f = new File(fPath+"/Pictures", "drawing.png");
+                        f = new File(fPath + "/Pictures", "drawing.png");
 
-                        FileOutputStream outstream=new FileOutputStream(f);
-                        viewCache.compress(Bitmap.CompressFormat.PNG,100,outstream);
-                        Toast savedmyToast= Toast.makeText(getApplicationContext(), "Drawing Saved to device", Toast.LENGTH_SHORT);
+                        FileOutputStream outstream = new FileOutputStream(f);
+                        viewCache.compress(Bitmap.CompressFormat.PNG, 100, outstream);
+                        Toast savedmyToast = Toast.makeText(getApplicationContext(), "Drawing Saved to device", Toast.LENGTH_SHORT);
                         savedmyToast.show();
 
-                    }
-                    catch(Exception e)
-                    {  Toast unsavedmyToast= Toast.makeText(getApplicationContext(), "Drawing not saved to device error message"+ e.getMessage(), Toast.LENGTH_SHORT);
-                       unsavedmyToast.show();
+                    } catch (Exception e) {
+                        Toast unsavedmyToast = Toast.makeText(getApplicationContext(), "Drawing not saved to device error message" + e.getMessage(), Toast.LENGTH_SHORT);
+                        unsavedmyToast.show();
                     }
 
+//svg saving
+                    try {
+                        File fPath = Environment.getExternalStorageDirectory();
+                        File f = null;
+                        f = new File(fPath + "/Pictures", "drawing.txt");
+
+                        FileWriter fw=new FileWriter(f);
+                        BufferedWriter writer = new BufferedWriter(fw);
+                        if (!f.exists())
+                        {
+                            try {
+                                f.createNewFile();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            finally {
+                                try {
+                                    DisplayMetrics metrics = new DisplayMetrics();
+                                    getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                                    int width = metrics.widthPixels;
+                                    int height = metrics.heightPixels;
+                                    writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
+
+                                    int counter = 0;
+
+                                    for (ArrayList<PointF> Line : drawView.giveAllLines()) {
+
+                                        writer.write("<polyline points="+"\"" );
+                                        for (PointF myPoint : Line)
+                                        {
+
+                                            if (counter == 0)
+                                            {
+                                                //setting up starting point
+                                                try {
+                                                        writer.write(String.valueOf(myPoint.x));
+                                                        writer.write(",");
+                                                        writer.write(String.valueOf(myPoint.x));
+                                                        writer.write(" ");
+                                                        writer.write(String.valueOf(myPoint.y));
+                                                        writer.write(",");
+                                                        counter++;
+                                                } catch (Exception e) {
+
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                if(counter<Line.size())
+                                                {
+                                                    writer.write(String.valueOf(myPoint.x));
+                                                    writer.write(" ");
+                                                    writer.write(String.valueOf(myPoint.y));
+                                                    writer.write(",");
+                                                    counter++;
+
+                                                }
+                                                else
+                                                {
+                                                    writer.write(String.valueOf(myPoint.x));
+                                                    writer.write(" ");
+                                                    writer.write(String.valueOf(myPoint.y));
+                                                }
+                                            }
+                                        }
+                                        counter=0;
+                                        writer.write("\" " +   "style=fill:none;stroke:black;stroke-width:2 />");
+
+                                    }
+                                    writer.write(" </svg>");
+
+                                }
+                                catch (Exception e)
+                                {
+                                    Toast myToast = Toast.makeText(getApplicationContext(), "Drawing SVG not exported " + e.getMessage(),Toast.LENGTH_SHORT);
+                                    myToast.show();
+                                }
+
+                                Toast myToast = Toast.makeText(getApplicationContext(), "Writer SVG generated ",Toast.LENGTH_SHORT);
+                                myToast.show();
+                                writer.flush();
+                            }
+                        }
+                        else
+                        {
+                            try {
+                                DisplayMetrics metrics = new DisplayMetrics();
+                                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                                int width = metrics.widthPixels;
+                                int height = metrics.heightPixels;
+                                writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
+                                int counter = 0;
+                                for (ArrayList<PointF> Line : drawView.giveAllLines()) {
+                                    writer.write("<polyline points= \"");
+
+                                    for (PointF myPoint : Line) {
+                                        if (counter == 0) {
+                                            //setting up starting point
+                                            try {
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(",");
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(" ");
+                                                writer.write(String.valueOf(myPoint.y));
+                                                writer.write(",");
+                                                counter++;
+                                            } catch (Exception e) {
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if(counter<Line.size())
+                                            {
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(" ");
+                                                writer.write(String.valueOf(myPoint.y));
+                                                writer.write(",");
+                                                counter++;
+
+                                            }
+                                            else
+                                            {
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(" ");
+                                                writer.write(String.valueOf(myPoint.y));
+                                            }
+                                        }
+                                    }
+                                    counter=0;
+                                    writer.write("\""+   " style=fill:none;stroke:black;stroke-width:2 />");
 
 
-                   /* String imgSaved = MediaStore.Images.Media.insertImage(
-                            getContentResolver(), drawView.getDrawingCache(),
-                            UUID.randomUUID().toString(), "Android drawing");
-                    if(imgSaved!=null){
-                        Toast savedToast = Toast.makeText(getApplicationContext(),
-                                "PNG saved to Gallery!", Toast.LENGTH_SHORT);
-                        savedToast.show();
+                                }
+                                writer.write(" </svg>");
+
+                            }
+                            catch (Exception e)
+                            {
+                                Toast myToast = Toast.makeText(getApplicationContext(), "Error in SVG" + e.getMessage(),Toast.LENGTH_SHORT);
+                            }
+                        }
+                        Toast myToast = Toast.makeText(getApplicationContext(), "Writer SVG generated ",Toast.LENGTH_SHORT);
+                        myToast.show();
+                        writer.flush();
                     }
-                    else{
-                        Toast unsavedToast = Toast.makeText(getApplicationContext(),
-                                "Image was unable to be saved to gallery.", Toast.LENGTH_SHORT);
-                        unsavedToast.show();
-                    }*/
+                    catch (Exception e)
+                    {
+                          Toast myToast = Toast.makeText(getApplicationContext(), "Error in SVG" + e.getMessage(),Toast.LENGTH_SHORT);
+                        myToast.show();
+                    }
                     drawView.destroyDrawingCache();
                 }
             });
@@ -110,7 +255,5 @@ public class MainActivity extends Activity implements OnClickListener{
             });
             saveDialog.show();
         }
-
     }
-
 }
