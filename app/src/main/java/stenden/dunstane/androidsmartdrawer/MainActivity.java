@@ -117,13 +117,12 @@ public class MainActivity extends Activity implements OnClickListener{
                                     writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
 
                                     int counter = 0;
-
+                                    writer.newLine();
                                     for (ArrayList<PointF> Line : drawView.giveAllLines()) {
 
                                         writer.write("<polyline points="+"\"" );
                                         for (PointF myPoint : Line)
                                         {
-
                                             if (counter == 0)
                                             {
                                                 //setting up starting point
@@ -161,6 +160,7 @@ public class MainActivity extends Activity implements OnClickListener{
                                         }
                                         counter=0;
                                         writer.write("\" " +   "style=fill:none;stroke:black;stroke-width:2 />");
+                                        writer.newLine();
 
                                     }
                                     writer.write(" </svg>");
@@ -186,6 +186,7 @@ public class MainActivity extends Activity implements OnClickListener{
                                 int height = metrics.heightPixels;
                                 writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
                                 int counter = 0;
+                                writer.newLine();
                                 for (ArrayList<PointF> Line : drawView.giveAllLines()) {
                                     writer.write("<polyline points= \"");
 
@@ -225,6 +226,7 @@ public class MainActivity extends Activity implements OnClickListener{
                                     }
                                     counter=0;
                                     writer.write("\""+   " style=fill:none;stroke:black;stroke-width:2 />");
+                                    writer.newLine();
 
 
                                 }
