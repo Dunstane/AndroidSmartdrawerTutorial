@@ -70,7 +70,8 @@ public class DrawingView extends View
         canvas.drawPath(drawPath, drawPaint);
     }
 
-
+//android touch drawing code for onTouchevents.
+    //uses methods in drawpath to create a path and later adds the path to the canvas
         @Override
         public boolean onTouchEvent(MotionEvent event)
         {
@@ -94,13 +95,13 @@ public class DrawingView extends View
                         drawPath.lineTo(event.getHistoricalX((size / 5) - 1), event.getHistoricalY((size / 5) - 1));
 
                         LastLinePoints.add(new PointF(event.getHistoricalX(((size / 5) * 2) - 1), event.getHistoricalY((size / 5) * 2) - 1));
-                        drawPath.lineTo(event.getHistoricalX(((size / 5) * 2) - 1), event.getHistoricalY((size / 5) * 2) - 1);
+                        //drawPath.lineTo(event.getHistoricalX(((size / 5) * 2) - 1), event.getHistoricalY((size / 5) * 2) - 1);
 
                         LastLinePoints.add(new PointF(event.getHistoricalX(((size / 5) * 3) - 1), event.getHistoricalY((size / 5) * 3) - 1));
-                        drawPath.lineTo(event.getHistoricalX(((size / 5) * 3) - 1), event.getHistoricalY((size / 5) * 3) - 1);
+                        //drawPath.lineTo(event.getHistoricalX(((size / 5) * 3) - 1), event.getHistoricalY((size / 5) * 3) - 1);
 
                         LastLinePoints.add(new PointF(event.getHistoricalX(((size / 5) * 4) - 1), event.getHistoricalY((size / 5) * 4) - 1));
-                        drawPath.lineTo(event.getHistoricalX(((size / 5) * 4) - 1), event.getHistoricalY((size / 5) * 4) - 1);
+                       // drawPath.lineTo(event.getHistoricalX(((size / 5) * 4) - 1), event.getHistoricalY((size / 5) * 4) - 1);
 
 
                         LastLinePoints.add(new PointF(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1)));
@@ -113,7 +114,7 @@ public class DrawingView extends View
                         drawPath.lineTo(event.getHistoricalX((size / 2) - 1), event.getHistoricalY((size / 2) - 1));
 
                         LastLinePoints.add(new PointF(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1)));
-                        drawPath.lineTo(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1));
+                        //drawPath.lineTo(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1));
 
                     }
                     else

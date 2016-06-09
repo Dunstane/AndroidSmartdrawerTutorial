@@ -34,6 +34,7 @@ public class MainActivity extends Activity implements OnClickListener{
 
     private ImageButton saveBtn, newBtn;
 
+    //overriding android listeners
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,10 +95,17 @@ public class MainActivity extends Activity implements OnClickListener{
                     }
 
 //svg saving
-                    try {
+
+                    //test 2 point lines in polyline
+                    //new method, 2 points per polyline?
+                    //todo, expirement with svg paths instead of polylines
+                    //todo, try to expiriment directly to svg
+                    //ask self, why do I have to write a script for svg
+
+       /*         try {
                         File fPath = Environment.getExternalStorageDirectory();
                         File f = null;
-                        f = new File(fPath + "/Pictures", "drawing.txt");
+                        f = new File(fPath + "/Pictures", "drawing.svg");
 
                         FileWriter fw=new FileWriter(f);
                         BufferedWriter writer = new BufferedWriter(fw);
@@ -225,7 +233,7 @@ public class MainActivity extends Activity implements OnClickListener{
                                         }
                                     }
                                     counter=0;
-                                    writer.write("\""+   " style=fill:none;stroke:black;stroke-width:2 />");
+                                    writer.write("\""+   " style=fill:none;stroke:black;stroke-width:1 />");
                                     writer.newLine();
 
 
@@ -245,6 +253,265 @@ public class MainActivity extends Activity implements OnClickListener{
                     catch (Exception e)
                     {
                           Toast myToast = Toast.makeText(getApplicationContext(), "Error in SVG" + e.getMessage(),Toast.LENGTH_SHORT);
+                        myToast.show();
+                    }
+                    */
+
+
+                    //new method of polylines
+                    try {
+                        File fPath = Environment.getExternalStorageDirectory();
+                        File f = null;
+                        f = new File(fPath + "/Pictures", "drawing.txt");
+
+                        FileWriter fw=new FileWriter(f);
+                        BufferedWriter writer = new BufferedWriter(fw);
+
+
+                        ///putting this here because I am lazy, these are needed for the calculations below
+
+                        // okay, so I have an arraylist of points
+                        // drawView.giveAllLines()
+                        //from there, I work out, for every line, I extract 2 points or 1 point(if at end)
+                        //I have a counter variable starting at 0
+                        //++ every point, and if it's 1 it creates a new line
+                        ArrayList<PointF> subline=new ArrayList<PointF>();    //mini lines to use in new method
+                        ArrayList<ArrayList<PointF>> collectionSublines=new ArrayList<ArrayList<PointF>>();
+                        int maincounter=0; //linesize compararer
+                        int subcounter=0;  //mini line checker
+                        PointF temp1=null;
+                        PointF temp2=null;
+
+
+                        if (!f.exists())
+                        {
+                            try {
+                                f.createNewFile();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            finally {
+                                try {
+                                    DisplayMetrics metrics = new DisplayMetrics();
+                                    getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                                    int width = metrics.widthPixels;
+                                    int height = metrics.heightPixels;
+                                    writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
+
+                                    int counter = 0;
+                                    writer.newLine();
+
+
+                                    for(ArrayList<PointF> curLine : drawView.giveAllLines())
+                                    {
+                                        for (PointF myPoint : curLine)
+                                        {
+                                            if(maincounter< curLine.size()  &&  curLine.size()%2==0)
+                                            {
+                                                if (subcounter == 0)
+                                                {
+                                                    subline=new ArrayList<PointF>();
+                                                    temp1 = myPoint;
+                                                    subline.add(temp1);
+                                                    subcounter++;
+                                                }
+                                                if(subcounter>=1)
+                                                {
+                                                    temp2=myPoint;
+                                                    subline.add(temp2);
+                                                    collectionSublines.add(subline);
+                                                    subcounter=0;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if(curLine.size()%2!=0)
+                                                {
+                                                    subline=new ArrayList<PointF>();
+                                                    temp1=myPoint;
+                                                    temp2=myPoint;
+                                                    subline.add(temp1);
+                                                    subline.add(temp2);
+                                                    subcounter=0;
+                                                    collectionSublines.add(subline);
+                                                }
+
+                                            }
+                                            maincounter++;
+                                        }
+                                    }
+
+                                    for (ArrayList<PointF> Line : collectionSublines) {
+
+                                        writer.write("<polyline points="+"\"" );
+                                        for (PointF myPoint : Line)
+                                        {
+                                            if (counter == 0)
+                                            {
+                                                //setting up starting point
+                                                try {
+                                                    writer.write(String.valueOf(myPoint.x));
+                                                    writer.write(",");
+                                                    writer.write(String.valueOf(myPoint.x));
+                                                    writer.write(" ");
+                                                    writer.write(String.valueOf(myPoint.y));
+                                                    writer.write(",");
+                                                    counter++;
+                                                } catch (Exception e) {
+
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                if(counter<Line.size())
+                                                {
+                                                    writer.write(String.valueOf(myPoint.x));
+                                                    writer.write(" ");
+                                                    writer.write(String.valueOf(myPoint.y));
+                                                    writer.write(",");
+                                                    counter++;
+
+                                                }
+                                                else
+                                                {
+                                                    writer.write(String.valueOf(myPoint.x));
+                                                    writer.write(" ");
+                                                    writer.write(String.valueOf(myPoint.y));
+                                                }
+                                            }
+                                        }
+                                        counter=0;
+                                        writer.write("\" " +   "style=fill:none;stroke:black;stroke-width:2 />");
+                                        writer.newLine();
+
+                                    }
+                                    writer.write(" </svg>");
+
+                                }
+                                catch (Exception e)
+                                {
+                                    Toast myToast = Toast.makeText(getApplicationContext(), "Drawing SVG not exported " + e.getMessage(),Toast.LENGTH_SHORT);
+                                    myToast.show();
+                                }
+
+                                Toast myToast = Toast.makeText(getApplicationContext(), "Writer SVG generated ",Toast.LENGTH_SHORT);
+                                myToast.show();
+                                writer.flush();
+                            }
+                        }
+                        else
+                        {
+                            try {
+                                DisplayMetrics metrics = new DisplayMetrics();
+                                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                                int width = metrics.widthPixels;
+                                int height = metrics.heightPixels;
+                                writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
+                                int counter = 0;
+                                writer.newLine();
+
+
+
+                                //making the minilines/points
+                                for(ArrayList<PointF> curLine : drawView.giveAllLines())
+                                {
+                                    for (PointF myPoint : curLine)
+                                    {
+                                        if(maincounter< curLine.size()  &&  curLine.size()%2==0)
+                                        {
+                                             if (subcounter == 0)
+                                             {
+                                                    subline=new ArrayList<PointF>();
+                                                    temp1 = myPoint;
+                                                    subline.add(temp1);
+                                                    subcounter++;
+                                             }
+                                            if(subcounter>=1)
+                                            {
+                                                temp2=myPoint;
+                                                subline.add(temp2);
+                                                collectionSublines.add(subline);
+                                                subcounter=0;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if(curLine.size()%2!=0)
+                                            {
+                                                subline=new ArrayList<PointF>();
+                                                temp1=myPoint;
+                                                temp2=myPoint;
+                                                subline.add(temp1);
+                                                subline.add(temp2);
+                                                subcounter=0;
+                                                collectionSublines.add(subline);
+                                            }
+
+                                        }
+                                        maincounter++;
+                                    }
+                                }
+
+
+                                for (ArrayList<PointF> miniLine : collectionSublines) {
+                                    writer.write("<polyline points= \"");
+
+                                    for (PointF myPoint : miniLine) {
+                                        if (counter == 0) {
+                                            //setting up starting point
+                                            try {
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(",");
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(" ");
+                                                writer.write(String.valueOf(myPoint.y));
+                                                writer.write(",");
+                                                counter++;
+                                            } catch (Exception e) {
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if(counter<miniLine.size())
+                                            {
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(" ");
+                                                writer.write(String.valueOf(myPoint.y));
+                                                writer.write(",");
+                                                counter++;
+
+                                            }
+                                            else
+                                            {
+                                                writer.write(String.valueOf(myPoint.x));
+                                                writer.write(" ");
+                                                writer.write(String.valueOf(myPoint.y));
+                                            }
+                                        }
+                                    }
+                                    counter=0;
+                                    writer.write("\""+   " style=fill:none;stroke:black;stroke-width:1 />");
+                                    writer.newLine();
+
+
+                                }
+                                writer.write(" </svg>");
+
+                            }
+                            catch (Exception e)
+                            {
+                                Toast myToast = Toast.makeText(getApplicationContext(), "Error in SVG" + e.getMessage(),Toast.LENGTH_SHORT);
+                            }
+                        }
+                        Toast myToast = Toast.makeText(getApplicationContext(), "Writer SVG generated ",Toast.LENGTH_SHORT);
+                        myToast.show();
+                        writer.flush();
+                    }
+                    catch (Exception e)
+                    {
+                        Toast myToast = Toast.makeText(getApplicationContext(), "Error in SVG" + e.getMessage(),Toast.LENGTH_SHORT);
                         myToast.show();
                     }
                     drawView.destroyDrawingCache();
