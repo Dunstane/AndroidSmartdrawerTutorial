@@ -277,7 +277,7 @@ public class MainActivity extends Activity implements OnClickListener{
                         //++ every point, and if it's 1 it creates a new line
                         ArrayList<PointF> subline=new ArrayList<PointF>();    //mini lines to use in new method
                         ArrayList<ArrayList<PointF>> collectionSublines=new ArrayList<ArrayList<PointF>>();
-                        int maincounter=0; //linesize compararer
+                        int maincounter=0; //subline size compararer
                         int subcounter=0;  //mini line checker
                         PointF temp1=null;
                         PointF temp2=null;
@@ -335,16 +335,15 @@ public class MainActivity extends Activity implements OnClickListener{
                                                     subcounter=0;
                                                     collectionSublines.add(subline);
                                                 }
-
                                             }
                                             maincounter++;
                                         }
                                     }
 
-                                    for (ArrayList<PointF> Line : collectionSublines) {
+                                    for (ArrayList<PointF> subLine : collectionSublines) {
 
                                         writer.write("<polyline points="+"\"" );
-                                        for (PointF myPoint : Line)
+                                        for (PointF myPoint : subLine)
                                         {
                                             if (counter == 0)
                                             {
@@ -364,7 +363,7 @@ public class MainActivity extends Activity implements OnClickListener{
                                             else
                                             {
 
-                                                if(counter<Line.size())
+                                                if(counter<subLine.size())
                                                 {
                                                     writer.write(String.valueOf(myPoint.x));
                                                     writer.write(" ");
@@ -382,7 +381,7 @@ public class MainActivity extends Activity implements OnClickListener{
                                             }
                                         }
                                         counter=0;
-                                        writer.write("\" " +   "style=fill:none;stroke:black;stroke-width:2 />");
+                                        writer.write("\" " +   "style=fill:none;stroke:black;stroke-width:1 />");
                                         writer.newLine();
 
                                     }
