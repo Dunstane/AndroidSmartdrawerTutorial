@@ -22,21 +22,31 @@ public class DrawingView extends View
 {
 
     /* Note that below are from a tutorial about drawing to android screens*/
+    //Link will be provided in resources
+
+
+    //Setting up variables
     private Path drawPath;
     private Paint drawPaint, canvasPaint;
+    private Canvas drawCanvas;      //Canvas we are drawing on
+    private Bitmap canvasBitmap;    //representation of the canvas in a bitmap
 
-    private Canvas drawCanvas;
-    private Bitmap canvasBitmap;
+
+    //arrays for logging points and lines
     private ArrayList<PointF> LastLinePoints;
     private ArrayList<PointF> Line;
     private ArrayList<ArrayList<PointF>> AllLines;
 
+
+    //constructor
     public DrawingView(Context context, AttributeSet attrs){
         super(context, attrs);
         setupDrawing();
         AllLines=new ArrayList<>();
         LastLinePoints=new ArrayList<PointF>();
     }
+
+    //creates the envoronment for drawing
     private void setupDrawing(){
         //sets up path and paint objects
         drawPath = new Path();
@@ -53,6 +63,7 @@ public class DrawingView extends View
        // LastLinePoints.clear();
     }
 
+    //override of Android Method, that is an event that fires when screen size is changes
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
@@ -63,6 +74,7 @@ public class DrawingView extends View
         drawCanvas = new Canvas(canvasBitmap);
     }
 
+    //another android event override that fires whenever (in this case) paths are drawn
     @Override
     protected void onDraw(Canvas canvas)
     {
@@ -76,7 +88,7 @@ public class DrawingView extends View
         public boolean onTouchEvent(MotionEvent event)
         {
 
-            float touchX = event.getX();
+            float touchX = event.getX();        //gets the x and y values of the current event (motionevent)
             float touchY = event.getY();
 
             LastLinePoints.add(new PointF(touchX,touchY));
@@ -86,24 +98,17 @@ public class DrawingView extends View
                     //setting up points log
                     LastLinePoints.add(new PointF(touchX,touchY));
                     break;
-                case MotionEvent.ACTION_MOVE:
-                    int size = event.getHistorySize();
+                case MotionEvent.ACTION_MOVE:                               //massive block that logs as many points as it can using the historical data, may be too precise.
+                    int size = event.getHistorySize();      //something we use to get a smoother line
                     if(size >= 5)
 
                     {
+
                         LastLinePoints.add(new PointF(event.getHistoricalX((size / 5) - 1),event.getHistoricalY((size / 5) - 1)));
                         drawPath.lineTo(event.getHistoricalX((size / 5) - 1), event.getHistoricalY((size / 5) - 1));
-
                         LastLinePoints.add(new PointF(event.getHistoricalX(((size / 5) * 2) - 1), event.getHistoricalY((size / 5) * 2) - 1));
-                        //drawPath.lineTo(event.getHistoricalX(((size / 5) * 2) - 1), event.getHistoricalY((size / 5) * 2) - 1);
-
                         LastLinePoints.add(new PointF(event.getHistoricalX(((size / 5) * 3) - 1), event.getHistoricalY((size / 5) * 3) - 1));
-                        //drawPath.lineTo(event.getHistoricalX(((size / 5) * 3) - 1), event.getHistoricalY((size / 5) * 3) - 1);
-
                         LastLinePoints.add(new PointF(event.getHistoricalX(((size / 5) * 4) - 1), event.getHistoricalY((size / 5) * 4) - 1));
-                       // drawPath.lineTo(event.getHistoricalX(((size / 5) * 4) - 1), event.getHistoricalY((size / 5) * 4) - 1);
-
-
                         LastLinePoints.add(new PointF(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1)));
                         drawPath.lineTo(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1));
 
@@ -112,9 +117,7 @@ public class DrawingView extends View
                     {
                         LastLinePoints.add(new PointF(event.getHistoricalX((size / 2) - 1), event.getHistoricalY((size / 2) - 1)));
                         drawPath.lineTo(event.getHistoricalX((size / 2) - 1), event.getHistoricalY((size / 2) - 1));
-
                         LastLinePoints.add(new PointF(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1)));
-                        //drawPath.lineTo(event.getHistoricalX(size - 1), event.getHistoricalY(size - 1));
 
                     }
                     else
@@ -127,15 +130,7 @@ public class DrawingView extends View
                 case MotionEvent.ACTION_UP:
                     LastLinePoints.add(new PointF(touchX,touchY));
                     AllLines.add(LastLinePoints);
-
                     drawCanvas.drawPath(drawPath, drawPaint);
-
-                 //   Line =new ArrayList<>();
-                   // for(PointF x: LastLinePoints)
-                   // {
-                    //    Line.add(x);
-                  //  }
-                   // LastLinePoints.clear();
                     drawPath.reset();
                     break;
                 default:
@@ -145,10 +140,13 @@ public class DrawingView extends View
             return true;
         }
 
+    //accessor
     public ArrayList<ArrayList<PointF>> giveAllLines()
     {
         return this.AllLines;
     }
+
+    //clears canvas, makes it clear and invalidates the current one.
     public void startNew(){
         drawCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 

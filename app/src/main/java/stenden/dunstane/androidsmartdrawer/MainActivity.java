@@ -29,6 +29,11 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import java.lang.String;
 
+
+///This application is based on a drawing tutorial found online.
+//
+
+
 public class MainActivity extends Activity implements OnClickListener{
     private DrawingView drawView;
 
@@ -46,6 +51,7 @@ public class MainActivity extends Activity implements OnClickListener{
         saveBtn.setOnClickListener(this);
     }
 
+    //override of the onClick event
     @Override
     public void onClick(View view)
     {
@@ -102,163 +108,9 @@ public class MainActivity extends Activity implements OnClickListener{
                     //todo, try to expiriment directly to svg
                     //ask self, why do I have to write a script for svg
 
-       /*         try {
-                        File fPath = Environment.getExternalStorageDirectory();
-                        File f = null;
-                        f = new File(fPath + "/Pictures", "drawing.svg");
-
-                        FileWriter fw=new FileWriter(f);
-                        BufferedWriter writer = new BufferedWriter(fw);
-                        if (!f.exists())
-                        {
-                            try {
-                                f.createNewFile();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            finally {
-                                try {
-                                    DisplayMetrics metrics = new DisplayMetrics();
-                                    getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                                    int width = metrics.widthPixels;
-                                    int height = metrics.heightPixels;
-                                    writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
-
-                                    int counter = 0;
-                                    writer.newLine();
-                                    for (ArrayList<PointF> Line : drawView.giveAllLines()) {
-
-                                        writer.write("<polyline points="+"\"" );
-                                        for (PointF myPoint : Line)
-                                        {
-                                            if (counter == 0)
-                                            {
-                                                //setting up starting point
-                                                try {
-                                                        writer.write(String.valueOf(myPoint.x));
-                                                        writer.write(",");
-                                                        writer.write(String.valueOf(myPoint.x));
-                                                        writer.write(" ");
-                                                        writer.write(String.valueOf(myPoint.y));
-                                                        writer.write(",");
-                                                        counter++;
-                                                } catch (Exception e) {
-
-                                                }
-                                            }
-                                            else
-                                            {
-
-                                                if(counter<Line.size())
-                                                {
-                                                    writer.write(String.valueOf(myPoint.x));
-                                                    writer.write(" ");
-                                                    writer.write(String.valueOf(myPoint.y));
-                                                    writer.write(",");
-                                                    counter++;
-
-                                                }
-                                                else
-                                                {
-                                                    writer.write(String.valueOf(myPoint.x));
-                                                    writer.write(" ");
-                                                    writer.write(String.valueOf(myPoint.y));
-                                                }
-                                            }
-                                        }
-                                        counter=0;
-                                        writer.write("\" " +   "style=fill:none;stroke:black;stroke-width:2 />");
-                                        writer.newLine();
-
-                                    }
-                                    writer.write(" </svg>");
-
-                                }
-                                catch (Exception e)
-                                {
-                                    Toast myToast = Toast.makeText(getApplicationContext(), "Drawing SVG not exported " + e.getMessage(),Toast.LENGTH_SHORT);
-                                    myToast.show();
-                                }
-
-                                Toast myToast = Toast.makeText(getApplicationContext(), "Writer SVG generated ",Toast.LENGTH_SHORT);
-                                myToast.show();
-                                writer.flush();
-                            }
-                        }
-                        else
-                        {
-                            try {
-                                DisplayMetrics metrics = new DisplayMetrics();
-                                getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                                int width = metrics.widthPixels;
-                                int height = metrics.heightPixels;
-                                writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
-                                int counter = 0;
-                                writer.newLine();
-                                for (ArrayList<PointF> Line : drawView.giveAllLines()) {
-                                    writer.write("<polyline points= \"");
-
-                                    for (PointF myPoint : Line) {
-                                        if (counter == 0) {
-                                            //setting up starting point
-                                            try {
-                                                writer.write(String.valueOf(myPoint.x));
-                                                writer.write(",");
-                                                writer.write(String.valueOf(myPoint.x));
-                                                writer.write(" ");
-                                                writer.write(String.valueOf(myPoint.y));
-                                                writer.write(",");
-                                                counter++;
-                                            } catch (Exception e) {
-
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(counter<Line.size())
-                                            {
-                                                writer.write(String.valueOf(myPoint.x));
-                                                writer.write(" ");
-                                                writer.write(String.valueOf(myPoint.y));
-                                                writer.write(",");
-                                                counter++;
-
-                                            }
-                                            else
-                                            {
-                                                writer.write(String.valueOf(myPoint.x));
-                                                writer.write(" ");
-                                                writer.write(String.valueOf(myPoint.y));
-                                            }
-                                        }
-                                    }
-                                    counter=0;
-                                    writer.write("\""+   " style=fill:none;stroke:black;stroke-width:1 />");
-                                    writer.newLine();
 
 
-                                }
-                                writer.write(" </svg>");
-
-                            }
-                            catch (Exception e)
-                            {
-                                Toast myToast = Toast.makeText(getApplicationContext(), "Error in SVG" + e.getMessage(),Toast.LENGTH_SHORT);
-                            }
-                        }
-                        Toast myToast = Toast.makeText(getApplicationContext(), "Writer SVG generated ",Toast.LENGTH_SHORT);
-                        myToast.show();
-                        writer.flush();
-                    }
-                    catch (Exception e)
-                    {
-                          Toast myToast = Toast.makeText(getApplicationContext(), "Error in SVG" + e.getMessage(),Toast.LENGTH_SHORT);
-                        myToast.show();
-                    }
-                    */
-
-
-                    //new method of polylines
+                    //saving paths from DV as polylines in a simple SVG file
                     try {
                         File fPath = Environment.getExternalStorageDirectory();
                         File f = null;
@@ -267,14 +119,12 @@ public class MainActivity extends Activity implements OnClickListener{
                         FileWriter fw=new FileWriter(f);
                         BufferedWriter writer = new BufferedWriter(fw);
 
-
-                        ///putting this here because I am lazy, these are needed for the calculations below
-
                         // okay, so I have an arraylist of points
                         // drawView.giveAllLines()
                         //from there, I work out, for every line, I extract 2 points or 1 point(if at end)
                         //I have a counter variable starting at 0
                         //++ every point, and if it's 1 it creates a new line
+
                         ArrayList<PointF> subline=new ArrayList<PointF>();    //mini lines to use in new method
                         ArrayList<ArrayList<PointF>> collectionSublines=new ArrayList<ArrayList<PointF>>();
                         int maincounter=0; //subline size compararer
@@ -339,9 +189,7 @@ public class MainActivity extends Activity implements OnClickListener{
                                             maincounter++;
                                         }
                                     }
-
                                     for (ArrayList<PointF> subLine : collectionSublines) {
-
                                         writer.write("<polyline points="+"\"" );
                                         for (PointF myPoint : subLine)
                                         {
@@ -357,12 +205,10 @@ public class MainActivity extends Activity implements OnClickListener{
                                                     writer.write(",");
                                                     counter++;
                                                 } catch (Exception e) {
-
                                                 }
                                             }
                                             else
                                             {
-
                                                 if(counter<subLine.size())
                                                 {
                                                     writer.write(String.valueOf(myPoint.x));
@@ -386,7 +232,6 @@ public class MainActivity extends Activity implements OnClickListener{
 
                                     }
                                     writer.write(" </svg>");
-
                                 }
                                 catch (Exception e)
                                 {
@@ -409,9 +254,6 @@ public class MainActivity extends Activity implements OnClickListener{
                                 writer.write("<svg height=\""+height+"\" width=\""+width+"\">");
                                 int counter = 0;
                                 writer.newLine();
-
-
-
                                 //making the minilines/points
                                 for(ArrayList<PointF> curLine : drawView.giveAllLines())
                                 {
